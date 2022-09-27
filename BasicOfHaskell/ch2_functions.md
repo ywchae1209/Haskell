@@ -42,9 +42,15 @@ main = putStrLn ( a b c d )
 
 ```
 
+#### Function Definition is Equation.
+
 함수와 변수의 정의가 더이상 간결할 수 있을까?  
 괄호나 다른 군더더기가 전혀없다. ( strong-type 언어인데, 타입도 추론한다.)  
 ( def, function 같은 키워드도 안 보인다. )
+
+함수정의에서 = 기호를 사용한 것은 우연이 아니다.
+함수가 사용된 모든 곳에 오른쪽의 expresion을 사용하거나 왼쪽의 함수정의를 언제든 치환할 수 있다.
+( 순수함수, 참조투명성 )
 
 ### Currying
 
