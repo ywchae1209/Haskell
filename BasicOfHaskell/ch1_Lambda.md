@@ -1,6 +1,6 @@
 # Lambda Calculus
 
-from _haskell-programming-from-first-principles_ chapter 1
+`from haskell-programming-from-first-principles (chapter 1)`
 
 - **The lambda calculus**, a model of computation devised in the 1930s by Alonzo Church.
 - **Functional programming** is a computer programming paradigm that relies on functions modeled on **mathematical functions**.
@@ -13,16 +13,16 @@ from _haskell-programming-from-first-principles_ chapter 1
 
 ## Lambda Calculus
 
-example of pure function  
- 𝑓(𝑥) = 𝑥 + 1
+    example of pure function
+         𝑓(𝑥) = 𝑥 + 1
 
 ### lambda terms
 
-**note) In below, x y z... are variable separately.**
+**note) In below, x y z... are variables(term) separately.**
 
     𝜆𝑥.𝑥𝑧
 
-    𝜆𝑥  : head
+    𝜆𝑥  : head, ( 𝜆 : start of head, . : end of head)
     x   : single parameter(__bound variable__)
     𝑥𝑧  : body (expression, z is __free variable__)
 
@@ -116,13 +116,12 @@ example of pure function
     6. (𝜆𝑎.𝑎𝑎)(𝜆𝑏.𝑏𝑎)𝑐             (𝜆𝑏.𝑏𝑎)(𝜆𝑏.𝑏𝑎)𝑐 --> 𝑎𝑎𝑐
     7. (𝜆𝑥𝑦𝑧.𝑥𝑧(𝑦𝑧))(𝜆𝑥.𝑧)(𝜆𝑥.𝑎)   (𝜆𝑧'.𝑧𝑎)     : hint) free, bound variable
 
-## more resource3
+## more resources
 
 1. Raul Rojas. A Tutorial Introduction to the Lambda Calculus
    http://www.inf.fu-berlin.de/lehre/WS03/alpi/lambda.pdf
 2. Henk Barendregt; Erik Barendsen. Introduction to
    Lambda Calculus
-   http://www.cse.chalmers.se/research/group/logic/
-   TypesSS05/Extra/geuvers.pdf
+   http://www.cse.chalmers.se/research/group/logic/TypesSS05/Extra/geuvers.pdf
 3. Jean-Yves Girard; P. Taylor; Yves Lafon. Proofs and Types
    http://www.paultaylor.eu/stable/prot.pdf
