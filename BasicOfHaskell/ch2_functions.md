@@ -106,11 +106,11 @@ So how would you interpret this?
     a (b * c) d
 ```
 
-- Exp0. is identical to Exp2, _not_ equivalent to Exp2.
-
-## 괄호를 줄이면 좋을 것 같은 상황....
+- Exp0. is identical to Exp1, _not_ equivalent to Exp2.
 
 ### $ Notation
+
+괄호를 줄이면 좋을 것 같은 상황....
 
 Exp 0.
 
