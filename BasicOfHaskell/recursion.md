@@ -43,7 +43,7 @@ rep' i a
 rep' i a =
     case i of
         n | n <= 0 -> []
-        n | n > 0 -> a : rep` (n-1) a
+        n | n > 0 -> a : rep' (n-1) a
 
 -- if
 rep' i a =
@@ -62,14 +62,14 @@ take' :: (Num i, Ord i) => i -> [a] -> [a]
 
 ```haskell
 -- guard
-take` n a
-    | (h:t) <- a, n > 0 = h : take` (n-1) t
+take' n a
+    | (h:t) <- a, n > 0 = h : take' (n-1) t
     | otherwise = []
 
 -- case
 take' n a =
     case n of
-        (h:t) | n > 0 -> h : take` (n-1) t
+        (h:t) | n > 0 -> h : take' (n-1) t
         otherwise -> []
 ```
 
@@ -101,7 +101,7 @@ repeat' :: a -> [a]
 ### solution
 
 ```haskell
-repeat' a = a : repeat` a
+repeat' a = a : repeat' a
 
 ```
 
@@ -138,11 +138,11 @@ elem' :: (Eq a) => a -> [a] -> Bool
 
 elem' e l
     | [] <- l = False
-    | (h:t) <- l = h == e || elem` e t
+    | (h:t) <- l = h == e || elem' e t
 
 elem' e l =
     case l of
-        (h:t) -> h == e || elem` e t
+        (h:t) -> h == e || elem' e t
         otherwise -> False
 
 ```
@@ -150,18 +150,18 @@ elem' e l =
 ## 8 concat
 
 ```haskell
-concat` :: [a] -> [a] -> [a]
+concat' :: [a] -> [a] -> [a]
 ```
 
 ### solution
 
 ```haskell
-concat` a b
+concat' a b
     | [] <- a = b
     | (h:t) <- a = h: concat' t b
 
 
-concat` a b =
+concat' a b =
     case a of
         [] -> b
         (h:t) -> h: concat' t b
@@ -179,7 +179,7 @@ join' :: [[a]] -> [a]
 ```haskell
 -- O(N)
 join' l =
-    let cs = (map (\s -> concat` s) l)
+    let cs = (map (\s -> concat' s) l)
         f = foldr (.) id cs
     in f []
 ```
