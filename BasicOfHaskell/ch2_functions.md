@@ -122,7 +122,11 @@ Exp 0.
 Exp 1.
 
 ```haskell
-    f g h i
+    f g h i         
+    --    f                            f :: g -> h -> i -> j 
+    --  ( f g )                      f g ::      h -> i -> j
+    -- (( f g ) h )                f g h ::           i -> j
+    --((( f g ) h ) i            f g h i ::                j
     --- is not equivalent to Exp0.
 ```
 
