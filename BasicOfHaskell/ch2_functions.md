@@ -122,7 +122,7 @@ Exp 0.
 Exp 1.
 
 ```haskell
-    f g h i
+    f g h i         -- == f ( g ( h i ) ) ; function call is right-associative
     --- is not equivalent to Exp0.
 ```
 
