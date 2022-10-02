@@ -156,13 +156,14 @@ runSM s (St run)
 ```haskell
 -- pointfree ; https://wiki.haskell.org/Pointfree
 
-addAndDrop x y = x + 1
-addAndDrop = const . ( 1+ )     -- const :: x -> y -> x
+f1 x y = x + 1
+f1 = const . ( 1+ )     -- const :: x -> y -> x
 
-reveseTuple x y = ( x, y )
-reveseTuple = flip (,)          -- flip :: (a -> b-> c) -> b -> a -> c
+f0 x y = ( x, y )
+f0 = flip (,)           -- flip :: (a -> b-> c) -> b -> a -> c
 
-
+f (a, b) = ( b, a)
+f = uncurry ( flip (,))
 
 
 ```

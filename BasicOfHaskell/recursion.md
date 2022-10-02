@@ -23,6 +23,7 @@ max' xs =
         [] -> error "maximum on empty"
         [x] -> x
         (h:t) ->  max x (max' t)
+
 ```
 
 ## 2 rep (replicate)
