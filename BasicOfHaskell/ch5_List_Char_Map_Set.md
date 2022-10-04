@@ -325,3 +325,107 @@ set2 = Set.fromList text2 -- fromList " !Tabcdefghilmnorstuvwy"
 
 set1 `Set.difference` set2 -- fromList ".?AIRj"
 ```
+
+# Make a custom module
+
+## 1
+
+````haskell
+-- Geometry.hs
+module Geometry
+( sphereVolume
+, sphereArea
+, cubeVolume
+, cubeArea
+, cuboidArea
+, cuboidVolume
+) where
+
+sphereVolume :: Float -> Float
+sphereVolume radius = (4.0 / 3.0) * pi * (radius ^ 3)
+
+sphereArea :: Float -> Float
+sphereArea radius = 4 * pi * (radius ^ 2)
+
+cubeVolume :: Float -> Float
+cubeVolume side = cuboidVolume side side side
+
+cubeArea :: Float -> Float
+cubeArea side = cuboidArea side side side
+
+cuboidVolume :: Float -> Float -> Float -> Float
+cuboidVolume a b c = rectangleArea a b * c
+
+cuboidArea :: Float -> Float -> Float -> Float
+cuboidArea a b c = rectangleArea a b * 2 + rectangleArea a c * 2 + rectangleArea c b * 2
+
+rectangleArea :: Float -> Float -> Float
+rectangleArea a b = a * b  ```
+````
+
+```haskell
+import Geometry -- or
+import Geometry (sphereArea, cubeArea) -- something like that..
+
+```
+
+## 2
+
+```haskell
+--- Geometry\Sphere.hs
+module Geometry.Sphere
+( volume
+, area
+) where
+
+volume :: Float -> Float
+volume radius = (4.0 / 3.0) * pi * (radius ^ 3)
+
+area :: Float -> Float
+area radius = 4 * pi * (radius ^ 2)
+
+-- Geometry\Cuboid.hs
+module Geometry.Cuboid
+( volume
+, area
+) where
+
+volume :: Float -> Float -> Float -> Float
+volume a b c = rectangleArea a b * c
+
+area :: Float -> Float -> Float -> Float
+area a b c = rectangleArea a b * 2 + rectangleArea a c * 2 + rectangleArea c b * 2
+
+rectangleArea :: Float -> Float -> Float
+rectangleArea a b = a * b
+
+-- Geometry\Cube.hs
+module Geometry.Cube
+( volume
+, area
+) where
+
+import qualified Geometry.Cuboid as Cuboid
+
+volume :: Float -> Float
+volume side = Cuboid.volume side side side
+
+area :: Float -> Float
+area side = Cuboid.area side side side
+```
+
+### 1
+
+```haskell
+import Geometry.Sphere
+```
+
+### 2
+
+```haskell
+-- qualified as .... because volume, area may conflict in below
+import qualified Geometry.Sphere as Sp
+import qualified Geometry.Cuboid as Cubo
+import qualified Geometry.Cube as Cu
+
+```
