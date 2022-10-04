@@ -6,11 +6,9 @@
 Haskell은 함수형 언어이므로, 함수를 정의하고 사용하는 데에 최소한의 노력을 들이도록 되어 있다.
 다른 언어에서 볼 수 없었던 문법적 특징이어서 당혹스럽기 쉽고, 먼저 살펴보면 적잖은 호기심과 자극이 될 듯.
 
-## ( 함수의 사용에서 ) **최소한** 이란 무슨 의미일까?
+## What does it mean "bare minimum"?
 
-What does it mean "bare minimum"? It means that This:
-
-### 함수호출
+### 1. Function call
 
 **일련의 식별자 나열은** 함수호촐이다.  
 _any series of identifiers is a function call_ or, as we often call it, a _function application_.  
@@ -25,7 +23,7 @@ _any series of identifiers is a function call_ or, as we often call it, a _funct
    `b`, `c`, `d` : three argument  
    Wow, it's function call !!!
 
-### 함수정의
+### 2. Function definitio
 
 try below in REPL.
 
@@ -42,7 +40,7 @@ main = putStrLn ( a b c d )
 
 ```
 
-#### Function Definition is Equation.
+#### 3. Function Definition is Equation.
 
 함수와 변수의 정의가 더이상 간결할 수 있을까?  
 괄호나 다른 군더더기가 전혀없다. ( strong-type 언어인데, 타입도 추론한다.)  
@@ -52,7 +50,7 @@ main = putStrLn ( a b c d )
 함수가 사용된 모든 곳에 오른쪽의 expresion을 사용하거나 왼쪽의 함수정의를 언제든 치환할 수 있다.
 ( 순수함수, 참조투명성 )
 
-### Currying
+### 4. Currying
 
 Below two are equivalent.
 
@@ -82,7 +80,7 @@ but, Below is not same. ( still valid Haskell.)
     f (a, b)
 ```
 
-### Precedence (우선순위)
+### 5. Precedence
 
 함수호출은 가장 높은 우선순위.
 
@@ -108,9 +106,7 @@ So how would you interpret this?
 
 - Exp0. is identical to Exp1, _not_ equivalent to Exp2.
 
-### $ Notation
-
-괄호를 줄이면 좋을 것 같은 상황....
+### 6. $ Notation
 
 Exp 0.
 
@@ -122,8 +118,8 @@ Exp 0.
 Exp 1.
 
 ```haskell
-    f g h i         
-    --    f                            f :: g -> h -> i -> j 
+    f g h i
+    --    f                            f :: g -> h -> i -> j
     --  ( f g )                      f g ::      h -> i -> j
     -- (( f g ) h )                f g h ::           i -> j
     --((( f g ) h ) i            f g h i ::                j
@@ -153,9 +149,9 @@ main = print $ sq $ sqrt $ 7 + 9
 
 `$` binds to the right, the square root will be executed first; and because it has **the lowest precedence**, the addition will be performed _before_ function application.
 
-### Dot(.) notation
+### 7. Dot(.) notation
 
-함수합성
+scala's compose
 
 Applying a function to the result of another function is called _function composition_ and has its own operator, the dot, `.`.  
 This operator has **very high precedence**, surpassed only by by that of function application.
@@ -167,7 +163,31 @@ sq x = x * x
 main = print $ (sq . sqrt) $ 7 + 9
 ```
 
-### id function
+### 8. >>>
+
+scala's andThen
+
+import Control.Arrow ((>>>))
+
+```haskell
+-- Caecar ciper
+
+import Control.Arrow ((>>>))
+encode' sh = map ord >>> map (+sh) >>> map chr
+-- encode' 1 "abc" == "bcd"
+```
+
+### 9. scala's ???
+
+```scala
+def f: Int = ???
+```
+
+```haskell
+f:: Int = undefined
+```
+
+### 9. id function
 
 The function that really does nothing is called the _identity_, `id`. Composing identity with any function doesn't change the behavior of that function. Try it:
 

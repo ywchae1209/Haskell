@@ -157,7 +157,21 @@ omit argument style
 
 ```haskell
 oddSquareSum :: Integer
+
 oddSquareSum = sum ( takeWhile (<10000) (filter odd (map (^2) [1..])))
+
 oddSquareSum = sum . takeWhile( <10000) . filter odd . map (^2) $ [1..]
+
+```
+
+###
+
+```haskell
+
+g = group [1,1,1,1,2,2,2,2,3,3,2,2,2,5,6,7]
+-- [[1,1,1,1],[2,2,2,2],[3,3],[2,2,2],[5],[6],[7]]
+
+h = map (\l(x:xs) -> (x, l.length)) g
+-- [(1,4),(2,7),(3,2),(5,1),(6,1),(7,1)]
 
 ```
