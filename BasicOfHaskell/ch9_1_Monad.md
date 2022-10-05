@@ -216,29 +216,3 @@ ghci> h 3
 f <=< ( g <=<> h ) === ( f <=< g ) <=< h
 
 ```
-
-## Monad
-
-# etc:: funcion as Monad ;;; working
-
-## Monad
-
-```haskell
-class Monad m where
-    return x :: m x
-    ( m a ) >== f :: m a -> (a -> m b) -> m b
-
-instance Monad ((->) r) where
-    return x = (\_ -> x)
-    ma >>= f = f (ma r)             -- bind
-    f <$> ma = \r -> f (ma r)       -- fmap
-    ma <*> mb = do                  -- apply
-        f <- ma
-        x <- mb
-        return (f x)
-
-    -- ma <*> mb = ma >== \f -> f <$> mb
-
-
-chain1 = (*2) >>= \a -> (+10) >>= \b -> return  (a + b)
-```
