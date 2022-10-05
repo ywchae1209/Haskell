@@ -2,11 +2,15 @@
 
 ## 1. co-product type
 
+scala
+
 ```scala
 sealed trait Bool
 case object True extends Bool
 case object False extends Bool
 ```
+
+haskell
 
 ```haskell
 data Bool = True | False deriving (Show, Eq)
@@ -14,11 +18,15 @@ data Bool = True | False deriving (Show, Eq)
 
 ## 2.
 
+scala
+
 ```scala
 sealed trait Shape
 case class Circle ( x: Float, y: Float, r: Float)
 case class Rectangle ( x: Float, y: Float, w: Float, h: Float)
 ```
+
+haskell
 
 ```haskell
 -- :t Circle :: Float -> Float -> Float -> Shape
@@ -34,6 +42,8 @@ data Shape' = Circle { x:: Float, y:: Float r:: Float} |
 
 ## 3. Export
 
+haskell
+
 ```haskell
 -- Shape.hs
 module Shape
@@ -43,6 +53,8 @@ module Shape
 ```
 
 ## 4. deriving :: Short note on type-class
+
+haskell
 
 ```haskell
 data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
@@ -80,6 +92,8 @@ pred Sunday                 -- Saturday         ;; Enum
 [minBound..maxBound] :: [Day]   -- Bounded, Enum
 
 ```
+
+scala
 
 ```scala
 sealed trait Day extends Eq with Ord with Show with Read with Enum with Bounded
@@ -134,11 +148,15 @@ inPhoneBook name number pbook = (name, number) `elem` pbook
 
 ### 1
 
+scala
+
 ```scala
 sealed trait Maybe[T]
 case class Just[T] ( value: T) extends Maybe[T]
 case object Nothing extends Maybe[Nothing]
 ```
+
+haskell
 
 ```haskell
 data Maybe a = Just a | Nothing         --  a :: type-parameter
@@ -146,11 +164,15 @@ data Maybe a = Just a | Nothing         --  a :: type-parameter
 
 ### 2
 
+scala
+
 ```scala
 sealed trait Either[L,R]
 case class Left[L,Nothing] ( value: L ) extends Either [L, Nothing]
 case class Right[Nothing, R] ( value: R ) extends Either [Nothing, R]
 ```
+
+haskell
 
 ```haskell
 data Either l r = Left l | Right r      -- l, r :: typa-parameter
@@ -196,12 +218,15 @@ lookup id map = case Map.lookup id map of
 
 ### 1
 
+scala
+
 ```scala
-// scala
 sealed trait List[T]
 case class Cons[T]( head: T, tail: List[T]) extends List[T]
 case object Nil extends List[Nothing]
 ```
+
+haskell
 
 ```haskell
 -- record syntax
