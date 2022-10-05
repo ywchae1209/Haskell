@@ -116,6 +116,12 @@
     6. (𝜆𝑎.𝑎𝑎)(𝜆𝑏.𝑏𝑎)𝑐             (𝜆𝑏.𝑏𝑎)(𝜆𝑏.𝑏𝑎)𝑐 --> 𝑎𝑎𝑐
     7. (𝜆𝑥𝑦𝑧.𝑥𝑧(𝑦𝑧))(𝜆𝑥.𝑧)(𝜆𝑥.𝑎)   (𝜆𝑧'.𝑧𝑎)     : hint) free, bound variable
 
+### Eta conversion
+
+    An eta conversion (also written η-conversion) is adding or dropping of abstraction over a function.
+    𝜆𝑥.𝑧𝑥 => 𝑧          ;  Eta reduction -- Haskell's pointfree programming
+    𝑧     => 𝜆𝑥.𝑧𝑥 =>   ;  Eta exapnsion
+
 ## more resources
 
 1. Raul Rojas. A Tutorial Introduction to the Lambda Calculus
