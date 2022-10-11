@@ -24,9 +24,37 @@ class Monad m where
     fail :: String -> m a
 ```
 
-## recap
+## recap :: Minimal
+
+### Functor
 
 ```haskell
+class Functor f where
+    fmap :: (a -> b) -> f a -> f b
+
+--- some operators
+(<$>) :: Functor f => (a -> b) -> f a -> f b  -- fmap
+(<&>) :: Functor f => f a -> (a -> b) -> f b  -- flip version of fmap
+($>) :: Functor f => f a -> b -> f b
+
+
+
+--------------------
+f <$> as = fmap f as
+as <&> f = f <$> as
+
+(<$) :: Functor f => a -> f b -> f a
+(<$) = fmap . const
+-- (fmap . const) 5 [1,2,7] === [5,5,5]
+ (\x -> (fmap ( const x))) 5 [1,2,7]
+
+
+
+
+```
+
+```haskell
+
 (<$>) :: (Functor f) => (a -> b) -> f a -> f b          -- fmap
 (<*>) :: (Applicative f) => f ( a -> b) -> f a -> f b   -- apply
 (>>=) :: (Monad m) => m a -> (a -> m b) -> m b          -- bind

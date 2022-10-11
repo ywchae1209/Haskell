@@ -50,6 +50,7 @@ instance Functor ((->) r ) where
 class (Functor f) => Appicative f where
     pure :: a -> f a
     (<*>) :: f ( a -> b) -> f a -> f b      -- apply function
+    (<$>) :: (a -> b) -> f a -> f b
 
 
 ```

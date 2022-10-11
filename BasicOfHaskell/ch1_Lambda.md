@@ -119,6 +119,7 @@
 ### Eta conversion
 
     An eta conversion (also written η-conversion) is adding or dropping of abstraction over a function.
+
     𝜆𝑥.𝑧𝑥 => 𝑧          ;  Eta reduction -- Haskell's pointfree programming
     𝑧     => 𝜆𝑥.𝑧𝑥 =>   ;  Eta exapnsion
 

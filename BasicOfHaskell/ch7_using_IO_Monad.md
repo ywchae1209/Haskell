@@ -1,3 +1,10 @@
+# Argument
+
+```haskell
+getArgs :: IO [String]
+getProgName :: IO String
+```
+
 # Some IO
 
 ```haskell
@@ -5,11 +12,27 @@
 putStrLn :: String -> IO ()
 putStr :: String -> IO ()
 putChar :: Char -> IO ()
+print :: Show a => a -> IO ()
 
 getChar :: IO Char
 readLine :: IO String
-print :: Show a => a -> IO ()
+getContents :: IO String
 
+interact :: (String -> String ) -> IO ()
+
+```
+
+## 0
+
+```haskell
+--- short word
+ghci> interact $ unwords . filter ((<4) . length)) . words
+
+```
+
+```haskell
+--- palindrome
+ghci> interact $ unwords . map (\s -> if s == reverse s then "p{" ++ s ++ "}" else s) . words
 
 ```
 
@@ -55,6 +78,65 @@ main = do
   rev :: String -> String
   rev = unwords . reverse . words
 
+```
+
+## 4
+
+```haskell
+main = do
+    contents <- getContents
+    putStr $ shortlines contents
+
+shortlines :: String -> String
+shortlines str =
+    let ls = lines str
+        shorts = filter (\l -> length l < 10) ls
+    in unlines shorts
+
+```
+
+# File IO
+
+## 1
+
+```haskell
+
+import System.IO
+import System.Directory
+
+-- type FilePath = String
+-- data IOMode = ReadMode | WriteMode | AppendMode | ReadWriteMode
+
+openFile :: FilePath -> IOMode -> IO Handle
+hClose :: Handle -> IO ()
+
+-- implicit close
+withFile :: FilePath -> IOMode -> (Handle -> IO r) -> IO r
+readFile :: FilePath -> IO String
+writeFile :: FilePath -> String -> IO ()
+appendFile :: FilePath -> String -> IO ()
+
+hGetLine
+hGetChar
+hGetContents :: Handle -> IO String
+
+hPutStr
+hPutStrLn
+hGetChar
+
+hFlush
+
+openTempFile
+
+removeFile
+renameFile
+
+```
+
+```haskell
+withFile "girlfreind.txt" ReadMode (\handle -> do
+    contents <- hGetContents  handle
+    putStr contents)
 ```
 
 # Some monadic cominator
@@ -151,17 +233,4 @@ name :paul
 address :no where
 paul living in no where
 ....
-
-```
-
-## when
-
-```haskell
-import Control.Monad
--- when :: applicative f => Bool -> f () -> f ()
-main = do
-    c <- getChar
-    when( c /= ' ') $ do
-        putChar c
-        main
 ```
