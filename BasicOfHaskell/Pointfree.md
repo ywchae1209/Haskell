@@ -52,6 +52,8 @@ SKI combinator calculus
 
 ## haskell's combinators
 
+search "categorical combinator haskell"
+
 ```haskell
 -- id
 id :: a -> a
@@ -193,9 +195,9 @@ E  = \a b c d e ->  (a b) ( c d e) -- == a b (c d e)
 
 ```
 
-- 짧은 생각....
-  scala에서 curry를 최소화해서 사용한다고 가정하면...
-  compose, black-bird, eagle will be very frequently used.
+\*\* Short Thinking ... in other lanuage (like scala)  
+ scala에서 curry를 최소로 사용한다면  
+ 위의 사례는 inner-outer 처리를 parameter화 한 일반형
 
 `process` = `outer-process` ( `inner-process` `target` )
 
@@ -249,6 +251,9 @@ case 4
 
 ### 함수의 적용에 대해..
 
+i spent couple of days... to find out the basics... ㅠㅠ
+
+<pre>
 1. 함수의 적용
 
    1. 가장 높은 우선순위
@@ -274,11 +279,9 @@ case 4
    (.f) a == a.f
    (.f) a b == (a.f)b == a(f b)
 
-## exercise
+</pre>
 
-https://hackage.haskell.org/package/data-aviary-0.2.3/docs/Data-Aviary-Birds.html
+## further reading
+
+https://hackage.haskell.org/package/data-aviary-0.2.3/docs/Data-Aviary-Birds.html  
 http://pointfree.io/
-
-```haskell
-
-```
