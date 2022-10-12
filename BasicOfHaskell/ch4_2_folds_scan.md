@@ -149,7 +149,7 @@ drops' = (length.takeWhile(<10000)) $ scanl1 (+) (map sqrt [1..])
 drop' + 1
 ```
 
-## pointless style
+## pointfree style (tacit)
 
 omit argument style
 
@@ -164,13 +164,15 @@ oddSquareSum = sum . takeWhile( <10000) . filter odd . map (^2) $ [1..]
 
 ```
 
-###
+## Note
 
 ```haskell
 
+-- `group` is different from other language. read manual
 g = group [1,1,1,1,2,2,2,2,3,3,2,2,2,5,6,7]
 -- [[1,1,1,1],[2,2,2,2],[3,3],[2,2,2],[5],[6],[7]]
 
+-- similar to scala's @ notation.
 h = map (\l(x:xs) -> (x, l.length)) g
 -- [(1,4),(2,7),(3,2),(5,1),(6,1),(7,1)]
 
