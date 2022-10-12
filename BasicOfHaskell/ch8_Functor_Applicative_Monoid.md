@@ -1,219 +1,323 @@
 # Fuctor
 
+## Functor type-class
+
 ```haskell
 class Functor f where
-    fmap :: (a -> b) -> f a -> f b
-    (<$>) :: (a -> b) -> f a -> f b
-    f <$> fa = fmap f fa
+    fmap :: a -> b -> f a -> f b
+    (<$>) = fmap
 ```
 
-## 1
+### Functor law
 
-```haskell
--- Functor IO from Monad IO
+    fmap id == id
+    id fmap == id
+
+## 1. IO functor
+
+````haskell
 instance Functor IO where
-    fmap f io = do
-        value <- io
-        return ( f value )
-```
+    fmap = \f io -> (>>=) io (\a -> f a)
+```haskell
+
 
 ```haskell
+-- example
+
 import Data.Char
 import Data.List
 
 -- getLine :: IO String
-fmap ( intersperse '-' . reverse . map toUpper ) getLine
 
+fmap (  map toUpper ) getLine
+fmap (  reverse . map toUpper ) getLine
+fmap (  intersperse '-' . reverse . map toUpper ) getLine
+
+-- pointfree
+\string -> (intersperse '-' ( reverse ( map toUpper string)))
+
+````
+
+## 2. function as Functor
+
+(->) r  
+:: function taking r
+
+```haskell
+instance Functor ((->) r) where
+    fmap = (.)      -- fmap = \fab fra r -> fab( fra r)
 ```
 
-## 2.
+```haskell
+-- example
+    (+3) <$> (*5) $ 10 -- ==  (+3) . (*5) $ 10 == 53
+```
+
+- note) when f :: r -> a
+
+```haskell
+    (->) r :: Functor
+    r ->   :: contra_Functor -- see later
+```
+
+## 3. Count-Maybe
+
+```haskell
+data CountMaybe a = CountMaybe a Int | CountNothing deriving (Show)
+
+--- counting fmap-call-count
+instance Functor CountMaybe where
+    fmap _ CountNothing =  CountNothing
+    fmap f (CountMaybe a n) = CountMaybe ( f a) (n+1)
+```
 
 ```haskell
 
--- function x -> a as Functor
-instance Functor ((->) r ) where
-    fmap f g = f . g
-    -- g :: r -> a
-    -- f :: a -> b
-    -- fmap f g :: r -> b
-```
-
-## 3.
-
-```haskell
-(++) <$> Just "Spring" <*> Just "Summer"    -- Just "SpringSummer"
+-- example
+    (++) <$> (Maybe "hello")      -- Option ( String -> String)
+    compare <$> (Maybe "hello")   -- Option ( String -> Ordering)
+    (*) <$> [1,2,3,4]             -- [Integer -> Integer]
+    (\f -> f 9) . (*) $ [1,2,3,4] -- [9,18,27,36]
 ```
 
 # Applicative Functor
 
+## Applicative type=class
+
 ```haskell
-class (Functor f) => Appicative f where
+class Functor f => Applicative f where
     pure :: a -> f a
-    (<*>) :: f ( a -> b) -> f a -> f b      -- apply function
-    (<$>) :: (a -> b) -> f a -> f b
-
-
+    (<*>) :: f ( a  -> b) -> f a -> f b
 ```
 
-## 1
+## 1. Option Applicative
 
 ```haskell
-instance Applicative Maybe where
-    pure a = Just a
-    (<*>) f Nothing = Nothing
-    (<*>) f (Just a) = Just ( f a)
+data Option a = Some a | None
+instance Function Option where
+    (<$>) f o = case o of
+            | None -> None
+            | Some a -> Some ( f a)
+
+instance Fuctor Option where
+    pure = Some
+    (<*>) None _       = None
+    (<*>) (Some f) sa  = fmap f sa
 ```
 
 ```haskell
-    Just (+3) <*> Just 3
-    Pure (+) <*> Just 2 <*> Just 5
+    (++) <$> Some "Hello" <*> Some "World" -- Some "HelloWorld"
 ```
 
-## 2
+## 2 [] Applicative
 
 ```haskell
+instance Functor [] where
+    fmap f la = [f x | x <- la]
+
 instance Applicative [] where
-    pure a = [a]
-    fs <*> xs = [ f a | f <- fs, x <- xs]
+    pure = []
+    ff <*> fa = ff >>= (\f -> fmap f fa)
 ```
 
+- <pre> f <$> x <*> y <*> z ... </pre>
+
+1. be familiar with syntatic sugar
+2. be familiar with point-free style
+
 ```haskell
-[(+2),(-2)] <*> [1,2,3]    -- [3,4,5,-1,0,1]
-[(+),(*)] <*> [1,2] <*> [3,4] -- [4,5,5,6,3,4,6,8]
+
+    [(+2),(-2)] <*> [1,2,3]
+    -- [3,4,5,-1,0,1]
+
+    [ (+), (*)] <*> [1,2] <*> [3,4]
+    -- [4,5,5,6,3,4,6,8]
+
+    (++) <$> ["ha","heh","hmm"] <*> ["?","!","."]
+    --["ha?","ha!","ha.","heh?","heh!","heh.","hmm?","hmm!","hmm."]
+
+    (*) <$> [1,2,3] <*> [4,5,6]
+    -- [4,5,6, 5,10,15, 6,12,18]
+
+    filter (>10) $ (*) <$> [1,2,3] <*> [4,5,6]
+    -- [15,12,18]
+
+    (,,) <$> [1,2] <*> [3,4] <*> [5,6]
+    -- [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
+
 ```
 
-```haskell
-ghci> (++) <$> ["ha","heh","hmm"] <*> ["?","!","."]
-["ha?","ha!","ha.","heh?","heh!","heh.","hmm?","hmm!","hmm."]
-```
+## 3 IO Applicative
 
 ```haskell
-filter (>50) $ (*) <$> [2,5,10] <*> [8,10,11]  -- [55,80,100,110]
+instance Functor IO where
+    fmap f io = io >>= (\a -> f a)
 
-```
-
-## 3
-
-```haskell
 instance Applicative IO where
     pure = return
-    a <*> b = do
-        f <- a
-        x <- b
-        return (f x)
+    fa <*> a = fa >>= (\f -> fmap f a)
+```
+
+```haskell
+    (++) <$> getLine <*> getLine    :: IO String
+    (,)  <$> getLine <*> getLine    :: IO (String, String)
+    (,,) <$> getLine <*> getLine <*> getLine    :: IO( String, String, String)
+```
+
+## 4 Funcion Applicative
+
+```haskell
+instance Functor ((->) r) where
+    fmap = (.)  -- fmap fab fra = fab . fra
+
+instance Applicative ((->) r) where
+    pure a = \_ -> a
+    f <*> g = \r -> f r (g r)   -- f :: r -> a -> b
+```
+
+```haskell
+
+    (,,) <$> (+3) <*> (*2) <*> (/2) $ 5
+
+    -- ( , , )
+    --          . (+3)
+    --                 . (*2)
+    --                         . (/2)
+    --              5       5       5
+    -- (8.0,10.0,2.5)
 
 ```
 
 ```haskell
-(++) <$> getLine <*> getLine
-```
 
-## 4 joining resource-consumer-function
+    (+) <$> (+3) <*> (*100)  --- ???
 
-```haskell
-instance Applicative ((->) r ) where        -- r -> a
-    pure x = (\_ -> x)
-    f <*> g = (\x -> f x (g x))             -- g :: r -> a, f :: r -> (a -> b)
-    f <$> g = f . g                         -- g :: r -> a, f :: a -> b
+    {-
+        (+) <$> (+3)            = (+) (a+3) :: 숫자를 주면 함수가 나온다.
+        (*100)                  =     (a*100):: 숫자를 주면 숫자가 나온다.
+        (+) <$> (+3) <*> (*100) = \a -> (+) (a+3) (a*100)
+    -}
 
-```
-
-```haskell
-ghci> (+) <$> (+3) <*> (*100) $ 5
--- add (+3)'s result and (*100)'s result
-508
+    (+) <$> (+3) <*> (*100) $ 5
 
 -- https://stackoverflow.com/questions/31152042/haskell-evaluation-of-3-100-5
 -- in detail
-(((+) <$> (+3))         <*> (*100)) $ 5        -- Add parens
-((fmap (+) (+3))        <*> (*100)) $ 5        -- Prefix fmap
-(((+) . (+3))           <*> (*100)) $ 5        -- fmap = (.)
-((\a -> (+) ((+3) a))   <*> (*100)) $ 5        -- Definition of (.)
-((\a -> (+) (a+3))      <*> (*100)) $ 5        -- Infix +
-((\a b -> (+) (a+3) b)) <*> (*100)) $ 5        -- Eta expand
-(\x -> (\a b -> (+) (a+3) b) x ((*100) x)) $ 5 -- Definition of (<*>)
-(\x -> (\a b -> (+) (a+3) b) x (x*100)) $ 5    -- Infix *
-(\a b -> (+) (a + 3) b) 5 (5*100)              -- Beta reduce
-(\a b -> (a + 3) + b)   5 (5*100)              -- Infix +
-(5 + 3) + (5*100)                              -- Beta reduce (twice)
-508                                            -- Definitions of + and *
-
-ghci> (\x y z -> [x,y,z]) <$> (+3) <*> (*2) <*> (/2) $ 5
-
--- [ , , ]
---          . (+3)
---                 . (*2)
---                         . (/2)
---              5       5       5
-
-[8.0,10.0,2.5]
+    (((+) <$> (+3))         <*> (*100)) $ 5        -- Add parens
+    (((+) . (+3))           <*> (*100)) $ 5        -- fmap = (.)
+    ((\a -> (+) ((+3) a))   <*> (*100)) $ 5        -- Definition of (.)
+    ((\a -> (+) (a+3))      <*> (*100)) $ 5        -- Infix +
+    ((\a b -> (+) (a+3) b)) <*> (*100)) $ 5        -- Eta expand
+    (\x -> (\a b -> (+) (a+3) b) x ((*100) x)) $ 5 -- Definition of (<*>)
+    (\x -> (\a b -> (+) (a+3) b) x (x*100)) $ 5    -- Infix *
+    (\a b -> (+) (a + 3) b) 5 (5*100)              -- Beta reduce
+    (\a b -> (a + 3) + b)   5 (5*100)              -- Infix +
+    (5 + 3) + (5*100)                              -- Beta reduce (twice)
+    508                                            -- Definitions of + and *
 
 ```
 
-## 5 ZipList, newtype
+## 5 ZipList Applicative : `newtype` keyword
+
+list <\*> by position.
+
+### `newtype` keyword
+
+newtype :: single-constructor with single-field.
+
+when we want to just take one type and wrap it in something to present it as another type.
+`newtype` is faster than `data` keyword
 
 ```haskell
 
--- data ZipList a = ZipList { getZipList :: [a] }
-newtype ZipList a = ZipList { getZipList :: [a] }
--- newtype :: one constructor with one field.
--- when we want to just take one type and wrap it in something to present it as another type.
--- 'newtype' is faster than 'data' keyword
+newtype ZipList a = ZipList { getZipList :: [a] }   -- data ZipList a = ZipList { getZipList :: [a] }
 
+instance Functor ZipList where
+    fmap f la = [f x | x <- la]
 
 instance Applicative ZipList where
     pure x = ZipList (repeat x)     -- infinite List
     ZipList fs <*> ZipList xs = ZipList ( zipwith (\f x -> f x) fs xs)  -- apply f, x by position-wide
+
 ```
 
 ```haskell
-(,,) <$> ZipList "dog" <*> ZipList "cat" <*> ZipList "rat"
-[('d','c','r'),('o','a','a'),('g','t','t')]
+
+    (,,) <$> ZipList "dog" <*> ZipList "cat" <*> ZipList "rat"
+    -- [('d','c','r'),('o','a','a'),('g','t','t')]
 ```
 
-## lift, sequence
+## `liftA2`, `liftA3` :: Lift Applicative n
 
 ```haskell
-Control.Applicative
-liftA2 :: (Applicative f) => (a -> b -> c) -> f a -> f b -> f c
+
+liftA  :: Applicative f => (a -> b) -> (f a -> f b)
+liftA f a  = f <$> a
+
+liftA2 :: Applicative f => (a -> b -> c) -> (f a -> f b -> f c)
 liftA2 f a b = f <$> a <*> b
 
-liftA2 (:) (Just 3) ( Just 4) -- Just [3,4]
+liftA3 :: Applicative f => (a -> b -> c -> d) -> (f a -> f b -> f c -> fd)
+liftA3 f a b c = f <$> a <*> b <*> c
+```
+
+```haskell
+
+(\x -> [x]) <$> Just 4                      -- Just [4]
+
+(:) (Just 3) (Just [4])                     -- Just [3,4]
+
+liftA2 (,) Just "hello" Just "world"        -- ("hello", "world")
+
+```
+
+## `sequence`
+
+```haskell
+sequenceA :: (Traversable t, Monad a) => t (m a) -> m (t a)
+-- Traversable :: iterate over, merge
+-- Applicative :: liftA2
 ```
 
 ```haskell
 sequenceA :: Applicative f => [f a] -> f [a]
 
-sequenceA [] = pure []
-sequenceA (x:xs) = (:) <$> x <*> sequenceA xs   -- recursive
+sequenceA [] = f []
+sequenceA [x:xs] = liftA2 (:) x xs
 
--- other way
-sequenceA = foldr ( liftA2 (:)) (pure [])
+-- sequenceA [x:xs] = (:) <$> x <*> xs
+-- sequenceA = foldr (liftA2 (:)) (pure [])     ; point-free version
+
 ```
 
 ```haskell
-sequenceA [ getLine, getLine, getLine]
+sequenceA [ getLine, getLine, getLine]      -- sequenceA [IO String]
 heyh
 ho
 woo
-["heyh","ho","woo"]
+["heyh","ho","woo"]                         -- IO [String]
+
+sequenceA[(+3), (+4), (-)5, (/6)]           -- sequenceA[ a::Num -> a]
+-- f = \(a::Num) -> [Num]
+
 ```
 
 # Monoid
 
+## Monoid type-class
+
 ```haskell
-
-import Data.Monoid
-
 class Monoid m where
     mempty :: m
     mappend :: m -> m -> m
+    (<>) = mappend
+
     mconcat :: [m] -> m
     mconcat = foldr mappend mempty
-
 ```
 
-## 1
+## Some Monoids
+
+- List Monoid
 
 ```haskell
 instance Monoid [a] where
@@ -221,99 +325,91 @@ instance Monoid [a] where
     mappend = ++
 ```
 
-## 2
+- Num-product Monoid
 
 ```haskell
+
 newtype Product a = Product { getProduct :: a} deriving (Eq, Ord, Read, Show, Bounded)
 
 instance Num a => Monoid (Product a) where
     mempty = 1
-    Product x `mappend` Product y = Product (x * y)
+    Product x <> Product y = Product (x * y)
 
-getProduct $ Product 3 `mappend` Product 9
--- 27
+getProduct $ Product 3 <> Product 9         -- 27
 ```
 
-## 3
+- Num-Sum Monoid
 
 ```haskell
 newtype Sum a = Sum { getSum :: a} deriving (Eq, Ord, Read, Show, Bounded)
 
 instance Num a => Monoid (Sum a) where
     mempty = 0
-    Sum x `mappend` Sum y = Sum ( x + y)
+    Sum x <> Sum y = Sum ( x + y)
 
-getSum $ Sum 4 `mappend` Sum 5
--- 9
+getSum $ Sum 4 <> Sum 5                      -- 9
 
 ```
 
-## 4
+- Bool-Any Monoid
 
 ```haskell
-newtype Any = Any { getAny :: Bool}
-    deriving (Eq, Ord, Read, Show, Bounded)
+newtype Any = Any { getAny :: Bool} deriving (Eq, Ord, Read, Show, Bounded)
 
 instance Monoid Any where
     mepty = Any False
-    Any x `mappend` Any y = Any (x ||y)
+    Any x <> Any y = Any ( x || y )
 
 
-getAny $ Any True `mappend` Any False
+getAny $ Any True <> Any False
 ```
 
-## 5
+- Bool-All Monoid
 
 ```haskell
-newtype All = All { getAll :: Bool}
-    deriving (Eq, Ord, Read, Show, Bounded)
+newtype All = All { getAll :: Bool} deriving (Eq, Ord, Read, Show, Bounded)
 
 instance Monoid All where
     mepty = All True
-    All x `mappend` All y = All (x && y)
+    All x <> All y = All (x && y)
 
-
-getAll $ All True `mappend` All False
+getAll $ All True <> All False
 ```
 
-## 6
+- Ordering-Monoid
 
 ```haskell
 
 -- Ordering = LT | EQ | GT
-
-instance Monoid All where
+instance Monoid Ordering where
     mepty = EQ
     mappend LT _  = LT
     mappend EQ y  = y
-    mappend _ GT  = GT
+    mappend GT _  = GT
 
 import Data.Monoid
 
 lengthCompare :: String -> String -> Ordering
-lengthCompare x y = (length x `compare` length y) `mappend` (x `compare` y)
+lengthCompare x y = (length x `compare` length y) <> (x `compare` y)
 ```
 
-## 7
+- First-Maybe Monoid
 
 ```haskell
-newtype First a = First { getFirst :: Maybe a}
-    deriving (Eq, Ord, Read, Show)
+newtype First a = First { getFirst :: Maybe a} deriving (Eq, Ord, Read, Show)
 
 instance Monoid ( First a ) where
     mempty = First Nothing
-    First (Just x) `mappend` _ = First (Just x)
-    First Nothing `mappend` x = x
+    First (Just x) <> _ = First (Just x)
+    First Nothing  <> x = x
 ```
 
-# using Monoid to fold
+# Using Monoid to fold
 
 ```haskell
-import qualified Foldable as F
 
-F.foldr :: F.Foldable t => (a -> b -> b) -> b -> t a-> b
-F.foldMap :: (Monoid m, Foldable t) => (a -> m) -> t a -> m
-
+foldr :: oldable t => (a -> b -> b) -> b -> t a-> b
+foldMap :: (Monoid m, Foldable t) => (a -> m) -> t a -> m
 ```
 
 ## 1
@@ -321,13 +417,9 @@ F.foldMap :: (Monoid m, Foldable t) => (a -> m) -> t a -> m
 ```haskell
 data Tree a = Empty | Node a (Tree a) (Tree a) deriving (Show, Read, Eq)
 
-instance F.Foldable Tree where
+instance Foldable Tree where
     foldMap f Empty = mempty
-    foldMap f (Node x l r) = F.foldMap f l `mappend`
-                             f x `mappend`
-                             F.foldMap f r
-
-
+    foldMap f (Node x l r) = foldMap f l <> f x <> foldMap f r
 ```
 
 ```haskell
@@ -341,10 +433,10 @@ testTree = Node 5
                 (Node 10 Empty Empty)
             )
 
-F.foldl (+) 0 testTree -- 42
-F.foldl (*) 1 testTree -- 64800
+foldl (+) 0 testTree -- 42
+foldl (*) 1 testTree -- 64800
 
-getAny $ F.foldMap ( \x -> Any $ x == 3) testTree   -- Tree
-getAll $ F.foldMap ( \x -> All $ x < 13) testTree   -- Tree
-F.foldMap (\x -> [x]) -- [1,3,6,5,8,9,10]
+getAny $ foldMap ( Any . ( == 3) )testTree   -- Tree
+getAll $ foldMap ( All . ( < 13) ) testTree   -- Tree
+foldMap (:[]) -- [1,3,6,5,8,9,10]
 ```

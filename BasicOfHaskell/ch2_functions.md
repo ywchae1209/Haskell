@@ -89,22 +89,12 @@ So how would you interpret this?
 0.
 
 ```haskell
-    a b * c d
+
+    a b * c d           == (a b) * (c d)
+    a b * c d           /= a ( b * c) d
+    a b + c d e * x y z  == (a b) + (c d e) * (x  y)
+
 ```
-
-1.
-
-```haskell
-    (a b) * (c d)
-```
-
-2.
-
-```haskell
-    a (b * c) d
-```
-
-- Exp0. is identical to Exp1, _not_ equivalent to Exp2.
 
 ### 6. $ Notation
 
@@ -123,7 +113,7 @@ Exp 1.
     --  ( f g )                      f g ::      h -> i -> j
     -- (( f g ) h )                f g h ::           i -> j
     --((( f g ) h ) i            f g h i ::                j
-    --- is not equivalent to Exp0.
+    --(f)(g)(h)(i)               f g h i ::                j
 ```
 
 Exp 2.
@@ -151,6 +141,7 @@ main = print $ sq $ sqrt $ 7 + 9
 
 ### 7. Dot(.) notation
 
+(`.`)  
 scala's compose
 
 Applying a function to the result of another function is called _function composition_ and has its own operator, the dot, `.`.  
@@ -158,10 +149,12 @@ This operator has **very high precedence**, surpassed only by by that of functio
 
 The composition of `sq` with `sqrt` may be written as `sq . sqrt`. This new function, when acting on a number will first take its square root and then square the result, so this will work too:
 
-```active haskell
+```haskell
 sq x = x * x
 main = print $ (sq . sqrt) $ 7 + 9
 ```
+
+see: pointfree.md
 
 ### 8. >>>
 
@@ -179,6 +172,8 @@ encode' sh = map ord >>> map (+sh) >>> map chr
 
 ### 9. scala's ???
 
+`undefined`
+
 ```scala
 def f: Int = ???
 ```
@@ -195,3 +190,59 @@ The function that really does nothing is called the _identity_, `id`. Composing 
 sq x = x * x
 main = print $ (sqrt . id) 256
 ```
+
+### 10. infix, prefix, sectioning
+
+prefix :: alpha-numeric named function ~ ex) function1 getUser
+infix :: only-symbol-named function ~ ex) ~> <$> <_> _>
+
+- use infix as prefix : surround **parentheses**
+
+```haskell
+
+-- all are equvalent
+
+add a b = a + b
+add a b = (+) a b       -- prefix form
+
+add a   = a+
+add a   = (+) a         -- prefix form
+
+add     = (+)
+
+```
+
+- use prefix as infix : surround **back quote**
+
+```haskell
+-- all are equvalent add
+
+add a b = a + b
+
+a `add` b = a + b       -- infix form
+
+```
+
+- sectioning
+
+partailly applied operator
+
+```haskell
+(3+)            = \a -> 3 + a       -- sectioning
+(-3)            = \a -> a - 3
+(*5)            = \a -> a * 5
+```
+
+### 11. parameter reduction
+
+- eta reduction
+
+```haskell
+add a b = a + b
+add a   = a +
+add     = (+)
+
+```
+
+There are much more of them  
+see : pointfree.md

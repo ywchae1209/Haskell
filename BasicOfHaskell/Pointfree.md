@@ -279,6 +279,13 @@ i spent couple of days... to find out the basics... ㅠㅠ
    (.f) a == a.f
    (.f) a b == (a.f)b == a(f b)
 
+3. 고차함수의 반환값
+   f :: a -> b -> c -> d -> e 일때,
+      f a :: b -> (c -> d -> e) ;; 당연하게도
+
+4. (.) 는  right-associative
+   f . g . h . i  == f .( g. ( h. (i))  
+
 </pre>
 
 ## further reading
