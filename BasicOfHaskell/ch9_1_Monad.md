@@ -241,6 +241,6 @@ ghci> h 3
     return <=< f === f
 
 --- Associativity
-f <=< ( g <=<> h ) === ( f <=< g ) <=< h
+f <=< ( g <=< h ) === ( f <=< g ) <=< h
 
 ```
