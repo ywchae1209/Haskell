@@ -25,3 +25,5 @@
 - ![cartoon1](https://panty.run/content/images/2020/03/ClW4GpUVYAAzxOx.jpg)
 
 - ![cartoon2](https://panty.run/content/images/size/w2000/2020/03/PLdiff-2.png)
+
+- https://www.slideshare.net/alexandrgranin/final-tagless-vs-free-monad
